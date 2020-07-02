@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ArticleCard from "./ArticleCard";
+import Timeout from "await-timeout";
+import axios from "axios";
 
 export default function ArticleList() {
   const notifications = [
@@ -21,7 +23,8 @@ export default function ArticleList() {
         "So yeah, you won't be able to look these images up. They're placeholders",
     },
   ];
-  const [articles, set_articles] = useState(notifications);
+
+  const [articles, set_articles] = useState();
 
   const dissapear = () => {
     set_articles([]);
@@ -30,6 +33,22 @@ export default function ArticleList() {
   const bringBack = () => {
     set_articles(notifications);
   };
+
+  useEffect(() => {
+    async function doSomeDataFetching() {
+      console.log("I'm gonna fetch some data!");
+
+      await Timeout.set(4000);
+      const res = await axios.get(
+        "https://jsonplaceholder.typicode.com/posts?_limit=5"
+      );
+
+      console.log("Got back:", res);
+      set_articles(res.data);
+    }
+    doSomeDataFetching();
+  }, []);
+
   return (
     <div>
       <p>Here's a lovely list of articles, for your reading pleasure:</p>
@@ -42,9 +61,17 @@ export default function ArticleList() {
         Bring back articles
       </button>
 
-      {articles.map((article) => (
-        <ArticleCard title={article.title} body={article.body} />
-      ))}
+      {!articles ? (
+        <h2>Loading...</h2>
+      ) : (
+        articles.map((article) => (
+          <ArticleCard
+            key={article.id}
+            title={article.title}
+            body={article.body}
+          />
+        ))
+      )}
     </div>
   );
 }
