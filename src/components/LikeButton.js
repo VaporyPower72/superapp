@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"; // <- note the added import of useState
+import React, { useState } from "react"; // <- note the added import of useState
 
 export default function LikeCounter() {
   const initial_text = "Like this";
